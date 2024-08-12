@@ -1,0 +1,21 @@
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+
+def preprocess_data(file_path):
+    # Load the dataset
+    df = pd.read_csv(file_path)
+    
+    # Print the column names to verify
+    print("Columns in the CSV file:", df.columns.tolist())
+    
+    # Check for the presence of the 'price' column
+    if 'price' not in df.columns:
+        raise KeyError("The 'price' column is not present in the CSV file.")
+    
+    # Example preprocessing steps
+    scaler = MinMaxScaler()
+    df['scaled_price'] = scaler.fit_transform(df[['price']])
+    
+    # Here, you would normally split the data, create features, etc.
+    # For simplicity, we're just returning the scaler used for inverse transformation
+    return None, None, None, None, scaler

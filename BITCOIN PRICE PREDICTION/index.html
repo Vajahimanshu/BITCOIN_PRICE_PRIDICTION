@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Price Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden; /* Prevent scrolling */
+        }
+        .container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%;
+            max-width: 600px; /* Adjust width as needed */
+            box-sizing: border-box;
+            text-align: center;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+        input[type="number"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .result {
+            font-size: 20px;
+            font-weight: bold;
+            color: #27ae60;
+            margin-top: 20px;
+        }
+        .footer {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 30px;
+        }
+        .loading {
+            font-size: 16px;
+            color: #3498db;
+            font-weight: bold;
+            display: none;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            button {
+                font-size: 14px;
+                padding: 8px;
+            }
+            input[type="number"] {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bitcoin Price Prediction</h1>
+        <form id="prediction-form" onsubmit="event.preventDefault(); predictPrice();">
+            <label for="open">Open Price ($):</label>
+            <input type="number" id="open" step="any" aria-required="true" required>
+
+            <label for="high">High Price ($):</label>
+            <input type="number" id="high" step="any" aria-required="true" required>
+
+            <label for="low">Low Price ($):</label>
+            <input type="number" id="low" step="any" aria-required="true" required>
+
+            <label for="day">Day:</label>
+            <input type="number" id="day" aria-required="true" required>
+
+            <label for="month">Month:</label>
+            <input type="number" id="month" aria-required="true" required>
+
+            <label for="year">Year:</label>
+            <input type="number" id="year" aria-required="true" required>
+
+            <button type="submit">Predict Price</button>
+        </form>
+
+        <div class="loading" id="loading">Predicting...</div>
+        <div class="result" id="prediction">Predicted Price: $0.00</div>
+    </div>
+
+    <div class="footer">
+        <p>Powered by Flask and Machine Learning</p>
+    </div>
+
+    <script>
+        async function predictPrice() {
+            const open = document.getElementById('open').value;
+            const high = document.getElementById('high').value;
+            const low = document.getElementById('low').value;
+            const day = document.getElementById('day').value;
+            const month = document.getElementById('month').value;
+            const year = document.getElementById('year').value;
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('prediction').innerText = '';
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ Open: open, High: high, Low: low, Day: day, Month: month, Year: year })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const result = await response.json();
+                document.getElementById('prediction').innerText = `Predicted Price: $${result.prediction.toFixed(2)}`;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('prediction').innerText = 'Prediction failed. Please try again.';
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
